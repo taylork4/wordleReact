@@ -1,35 +1,101 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import './index.css'
+
+
 
 function App() {
     const headingStyle = {
         fontSize: '100px',
         fontWeight: 'bold',
-      };
-    const [count, setCount] = useState(0)
+    };
+
     const [userWords, setUserWords] = useState<string[]>(Array(30).fill(""));
     const [letterColor, setLetterColor] = useState<string[]>(Array(30).fill(""));
-    const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
-    let userGuesses: string[] = ["", "", "", "", "", ""];
-    let congrats: boolean = false;
-    let gameover: boolean = false;
-    let checks = 0;
-    let secretWord: string = words[Math.floor(Math.random() * words.length)];
+    const [congrats, setCongrats] = useState(false);
+    const [gameover, setGameover] = useState(false);
+
+    const [checks, setChecks] = useState(0)
+    const [secretWord, setSecretWord] = useState<string>(() => {
+        const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
+        return words[Math.floor(Math.random() * words.length)];
+    });
+
+    function generateNewWord() {
+        const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
+        const newWord = words[Math.floor(Math.random() * words.length)];
+        setSecretWord(newWord);
+      }
 
     function newGame() {
-        secretWord = words[Math.floor(Math.random() * words.length)];
-        congrats = false;
-        gameover = false;
-        checks = 0;
+        generateNewWord();
+        setCongrats(false);
+        setGameover(false);
+        setChecks(0);
         setUserWords(Array(30).fill(""))
         setLetterColor(Array(30).fill(""))
+    }
+
+    /*--------------------------------------------------------------------------------------------
+        The checkAnswer() method is a word matching algorithm with built-in checks for
+        duplicate letters.
+    -------------------------------------------------------------------*/
+    function checkAnswer() {
+        // const secretWord = "dolly" //test word
+        const cellLoc = 5 * checks;
+        let tempArray: Array<string> = [];
+        
+        // Initializes the temporary array with the secret word separated by each individual character
+        for (let i = 0; i < 5; i++) {
+            // When a blank space exists in row, the user will not be able to check their results
+            if (userWords[i + cellLoc] == "") {
+                return;
+            }
+            tempArray.push(secretWord.charAt(i));
         }
-      function checkWin() {
+    
+        for (let i = 0; i < 5; i++) {
+            // Checks if there is a correct letter in the correct location
+            if (userWords[i + cellLoc].toLowerCase() == secretWord.charAt(i) && tempArray.includes(userWords[i + cellLoc].toLowerCase())) {
+                letterColor[i + cellLoc] = "G" // Correct letter, correct location
+                // Checks for duplicate letters in a word
+                for (let j = 0; j < 5; j++) {
+                    if (tempArray[j] == userWords[i + cellLoc].toLowerCase()) {
+                        tempArray.splice(j, 1);
+                        break;
+                    }
+                }
+            // Checks if there is a correct letter in the wrong location
+            } else if (secretWord.charAt(i) != userWords[i + cellLoc] && tempArray.includes(userWords[i + cellLoc].toLowerCase())) {
+                letterColor[i + cellLoc] = "Y" // Correct letter, wrong location
+                // Checks for duplicate letters in a word
+                for (let j = 0; j < 5; j++) {
+                    if (tempArray[j] == userWords[i + cellLoc].toLowerCase()) {
+                        tempArray.splice(j, 1);
+                        break;
+                    }
+                }
+            // Sets color of cell with the wrong letter
+            } else {
+                letterColor[i + cellLoc] = "B"; // Wrong letter
+            }
+        }
+        
+        // After 6 guesses, the player loses
+        setChecks(checks + 1);
+    
+        // Checks if player won 
+        checkWin();
+    
+        if (checks == 6 && !congrats) {
+            setGameover(true);
+        }
+        setUserWords([...userWords]);
+    }
+
+    function checkWin() {
         let numFound = 0;
-        let countInst = 0;
+
         // Checks grid to see if player has won yet.
         for (let i = 0; i < 30; i++) {
           if (letterColor[i] == "G") {
@@ -37,7 +103,6 @@ function App() {
           }
           // Player wins when five letters in a row are correct.
           if (numFound == 5) {
-            countInst += 1;
             win();
           // Checks next row
           } else if ((i + 1) % 5 == 0) {
@@ -46,68 +111,11 @@ function App() {
         }
       }
     /*--------------------------------------------------------------------------------------------
-        The checkAnswer() method is a word matching algorithm with built-in checks for
-        duplicate letters.
-    -------------------------------------------------------------------*/
-    function checkAnswer() {
-        // const secretWord = "dolly" //test word
-        const cellLoc = 5 * checks;
-        let index = -1;
-        let tempArray: Array<string> = [];
-        
-    
-        // Initializes the temporary array with the secret word separated by each individual character
-        for (let i = 0; i < 5; i++) {
-        // When a blank space exists in row, the user will not be able to check their results
-        if (userWords[i + cellLoc] == "") {
-            return;
-        }
-        tempArray.push(secretWord.charAt(i));
-        }
-    
-        for (let i = 0; i < 5; i++) {
-        // Checks if there is a correct letter in the correct location
-        if (userWords[i + cellLoc].toLowerCase() == secretWord.charAt(i) && tempArray.includes(userWords[i + cellLoc].toLowerCase())) {
-            letterColor[i + cellLoc] = "G" // Correct letter, correct location
-            // Checks for duplicate letters in a word
-            for (let j = 0; j < 5; j++) {
-            if (tempArray[j] == userWords[i + cellLoc].toLowerCase()) {
-                tempArray.splice(j, 1);
-                break;
-            }
-            }
-        // Checks if there is a correct letter in the wrong location
-        } else if (secretWord.charAt(i) != userWords[i + cellLoc] && tempArray.includes(userWords[i + cellLoc].toLowerCase())) {
-            letterColor[i + cellLoc] = "Y" // Correct letter, wrong location
-            // Checks for duplicate letters in a word
-            for (let j = 0; j < 5; j++) {
-            if (tempArray[j] == userWords[i + cellLoc].toLowerCase()) {
-                tempArray.splice(j, 1);
-                break;
-            }
-            }
-        // Sets color of cell with the wrong letter
-        } else {
-            letterColor[i + cellLoc] = "B"; // Wrong letter
-        }
-        }
-        
-        // After 6 guesses, the player loses
-        checks += 1;
-    
-        // Checks if player won 
-        checkWin();
-    
-        if (checks == 6 && !congrats) {
-            gameover = true;
-        }
-    }
-    /*--------------------------------------------------------------------------------------------
         The win() method allows congratulations screen to display and
         pauses timer.
     -------------------------------------------------------------------*/
     function win() {
-        congrats = true;
+        setCongrats(true);
     }
 
     return (
@@ -122,11 +130,11 @@ function App() {
                 className="cell"
                 value={userWords[pos]}
                 onChange={(e) => {
-                const updatedUserWords = [...userWords];
-                updatedUserWords[pos] = e.target.value;
-                setUserWords(updatedUserWords);
+                    const updatedUserWords = [...userWords];
+                    updatedUserWords[pos] = e.target.value;
+                    setUserWords(updatedUserWords);
                 }}
-            />
+                />
             )}
             {letterColor[pos] === "B" && (
                 <input
@@ -178,12 +186,6 @@ function App() {
                 )}
             </div>
             <br/>
-            {/* <button onClick={() => setCount((count) => count + 1)}>
-            New Game
-            </button>
-            <button onClick={() => setCount((count) => count + 1)}>
-            Check
-            </button> */}
         </div>
         <div className="report">
             <h1 style={headingStyle}> <b>Report:</b> </h1>
@@ -221,33 +223,3 @@ function App() {
 }
 
 export default App
-
-
-// <template>
-//   <h>
-//     <div id="grid">
-//       <p v-for="(w, pos) in userWords" v-bind:key="pos">
-//         <input class="cell" v-if="letterColor[pos] == '' " v-model="userWords[pos]" />
-//         <input class="cell" id="wrong" v-else-if="letterColor[pos] == 'B'" v-model="userWords[pos]" />
-//         <input class="cell" id="right" v-else-if="letterColor[pos] == 'G'" v-model="userWords[pos]" />
-//         <input class="cell" id="misplaced" v-else-if="letterColor[pos] == 'Y'" v-model="userWords[pos]" />
-//       </p>
-//     </div>
-//   </h>
-//   <p>
-//     <h v-if="congrats" style="color: black;">
-//       <h1> 🎊 Congratulations! You Win! 🎊 </h1>
-//       <h2> Tap the 'New Game' button to play again! </h2>
-//     </h>
-//     <h v-else-if="gameover" style="color: black;">
-//       <h1> 😔 Game Over! No more guesses left! 😔 </h1>
-//       <h2> The word was '{{ secretWord }}' </h2>
-//       <h2> Tap the 'New Game' button to play again! </h2>
-//     </h>
-//   </p>
-//   <br>
-//   <div class="buttons">
-//     <button @click="newGame"> New Game </button>
-//     <button v-if="!congrats && !gameover" @click="checkAnswer"> Check Answer </button>
-//   </div>
-//   <br>
