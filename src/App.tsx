@@ -15,20 +15,15 @@ function App() {
     const [congrats, setCongrats] = useState(false);
     const [gameover, setGameover] = useState(false);
 
-    const [checks, setChecks] = useState(0)
+    const [checks, setChecks] = useState(0);
+    const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
     const [secretWord, setSecretWord] = useState<string>(() => {
-        const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
         return words[Math.floor(Math.random() * words.length)];
     });
 
-    function generateNewWord() {
-        const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
-        const newWord = words[Math.floor(Math.random() * words.length)];
-        setSecretWord(newWord);
-      }
 
     function newGame() {
-        generateNewWord();
+        setSecretWord(words[Math.floor(Math.random() * words.length)]);
         setCongrats(false);
         setGameover(false);
         setChecks(0);
@@ -83,11 +78,10 @@ function App() {
         
         // After 6 guesses, the player loses
         setChecks(checks + 1);
-    
         // Checks if player won 
         checkWin();
-    
-        if (checks == 6 && !congrats) {
+        
+        if (checks == 5 && !congrats) {
             setGameover(true);
         }
         setUserWords([...userWords]);
@@ -122,61 +116,75 @@ function App() {
     <div className="App">
         <h1>Wordle in React</h1>
         <h1>
-        <div id="grid">
-        {userWords.map((w, pos) => (
-            <p key={pos}>
-            {letterColor[pos] === "" && (
-            <input
-                className="cell"
-                value={userWords[pos]}
-                onChange={(e) => {
-                    const updatedUserWords = [...userWords];
-                    updatedUserWords[pos] = e.target.value;
-                    setUserWords(updatedUserWords);
-                }}
-                />
-            )}
-            {letterColor[pos] === "B" && (
+            <div id="grid">
+            {userWords.map((w, pos) => (
+                <p key={pos}>
+                {letterColor[pos] === "" && (
                 <input
-                className="cell"
-                id="wrong"
-                value={userWords[pos]}
-                onChange={(e) => {
-                    const updatedUserWords = [...userWords];
-                    updatedUserWords[pos] = e.target.value;
-                    setUserWords(updatedUserWords);
-                }}
-                />
-            )}
-            {letterColor[pos] === "G" && (
-                <input
-                className="cell"
-                id="right"
-                value={userWords[pos]}
-                onChange={(e) => {
-                    const updatedUserWords = [...userWords];
-                    updatedUserWords[pos] = e.target.value;
-                    setUserWords(updatedUserWords);
-                }}
-                />
-            )}
-            {letterColor[pos] === "Y" && (
-                <input
-                className="cell"
-                id="misplaced"
-                value={userWords[pos]}
-                onChange={(e) => {
-                    const updatedUserWords = [...userWords];
-                    updatedUserWords[pos] = e.target.value;
-                    setUserWords(updatedUserWords);
-                }}
-                />
-            )}
-            </p>
-        ))}
-
-        </div>
+                    className="cell"
+                    value={userWords[pos]}
+                    onChange={(e) => {
+                        const updatedUserWords = [...userWords];
+                        updatedUserWords[pos] = e.target.value;
+                        setUserWords(updatedUserWords);
+                    }}
+                    />
+                )}
+                {letterColor[pos] === "B" && (
+                    <input
+                    className="cell"
+                    id="wrong"
+                    value={userWords[pos]}
+                    onChange={(e) => {
+                        const updatedUserWords = [...userWords];
+                        updatedUserWords[pos] = e.target.value;
+                        setUserWords(updatedUserWords);
+                    }}
+                    />
+                )}
+                {letterColor[pos] === "G" && (
+                    <input
+                    className="cell"
+                    id="right"
+                    value={userWords[pos]}
+                    onChange={(e) => {
+                        const updatedUserWords = [...userWords];
+                        updatedUserWords[pos] = e.target.value;
+                        setUserWords(updatedUserWords);
+                    }}
+                    />
+                )}
+                {letterColor[pos] === "Y" && (
+                    <input
+                    className="cell"
+                    id="misplaced"
+                    value={userWords[pos]}
+                    onChange={(e) => {
+                        const updatedUserWords = [...userWords];
+                        updatedUserWords[pos] = e.target.value;
+                        setUserWords(updatedUserWords);
+                    }}
+                    />
+                )}
+                </p>
+            ))}
+            </div>
         </h1>
+        <h2>
+            {congrats ? (
+                <div>
+                <h1> 🎊 Congratulations! You Win! 🎊 </h1>
+                <h2> Tap the 'New Game' button to play again! </h2>
+                </div>
+            ) : gameover ? (
+                <div>
+                <h1> 😔 Game Over! No more guesses left! 😔 </h1>
+                <h2> The word was '{secretWord}' </h2>
+                <h2> Tap the 'New Game' button to play again! </h2>
+                </div>
+            ) : null}
+        </h2>
+
         <div className="card">
             <br/>
             <div className="buttons">
