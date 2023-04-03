@@ -22,6 +22,13 @@ function App() {
     });
 
 
+    /*--------------------------------------------------------------------------------------------
+    The newGame() method initializes the next Wordle game.
+        ~ The timer gets reset and restarted
+        ~ A new secret word gets set
+        ~ All cells get reset
+        ~ Game over/win conditions reset
+    -------------------------------------------------------------------*/
     function newGame() {
         setSecretWord(words[Math.floor(Math.random() * words.length)]);
         setCongrats(false);
@@ -87,6 +94,10 @@ function App() {
         setUserWords([...userWords]);
     }
 
+    /*--------------------------------------------------------------------------------------------
+        The checkWin() method verifies if the user got the correct answer
+        before using up all of the guesses
+    -------------------------------------------------------------------*/
     function checkWin() {
         let numFound = 0;
 
@@ -112,6 +123,7 @@ function App() {
         setCongrats(true);
     }
 
+
     return (
     <div className="App">
         <h1>Wordle in React</h1>
@@ -119,53 +131,38 @@ function App() {
             <div id="grid">
             {userWords.map((w, pos) => (
                 <p key={pos}>
-                {letterColor[pos] === "" && (
-                <input
-                    className="cell"
-                    value={userWords[pos]}
-                    onChange={(e) => {
-                        const updatedUserWords = [...userWords];
-                        updatedUserWords[pos] = e.target.value;
-                        setUserWords(updatedUserWords);
-                    }}
-                    />
-                )}
-                {letterColor[pos] === "B" && (
-                    <input
-                    className="cell"
-                    id="wrong"
-                    value={userWords[pos]}
-                    onChange={(e) => {
-                        const updatedUserWords = [...userWords];
-                        updatedUserWords[pos] = e.target.value;
-                        setUserWords(updatedUserWords);
-                    }}
-                    />
-                )}
-                {letterColor[pos] === "G" && (
-                    <input
-                    className="cell"
-                    id="right"
-                    value={userWords[pos]}
-                    onChange={(e) => {
-                        const updatedUserWords = [...userWords];
-                        updatedUserWords[pos] = e.target.value;
-                        setUserWords(updatedUserWords);
-                    }}
-                    />
-                )}
-                {letterColor[pos] === "Y" && (
-                    <input
-                    className="cell"
-                    id="misplaced"
-                    value={userWords[pos]}
-                    onChange={(e) => {
-                        const updatedUserWords = [...userWords];
-                        updatedUserWords[pos] = e.target.value;
-                        setUserWords(updatedUserWords);
-                    }}
-                    />
-                )}
+                    {letterColor[pos] === "" && (
+                    <input className="cell" value={userWords[pos]} onChange={(e) => {
+                            const updatedUserWords = [...userWords];
+                            updatedUserWords[pos] = e.target.value;
+                            setUserWords(updatedUserWords);
+                        }}
+                    />)}
+                    {letterColor[pos] === "B" && (
+                        <input className="cell" id="wrong" value={userWords[pos]} onChange={(e) => {
+                            const updatedUserWords = [...userWords];
+                            updatedUserWords[pos] = e.target.value;
+                            setUserWords(updatedUserWords);
+                        }}
+                    />)}
+                    {letterColor[pos] === "G" && (
+                        <input className="cell" id="right" value={userWords[pos]} onChange={(e) => {
+                            const updatedUserWords = [...userWords];
+                            updatedUserWords[pos] = e.target.value;
+                            setUserWords(updatedUserWords);
+                        }}
+                    />)}
+                    {letterColor[pos] === "Y" && (
+                        <input
+                        className="cell"
+                        id="misplaced"
+                        value={userWords[pos]}
+                        onChange={(e) => {
+                            const updatedUserWords = [...userWords];
+                            updatedUserWords[pos] = e.target.value;
+                            setUserWords(updatedUserWords);
+                        }}
+                    />)}
                 </p>
             ))}
             </div>
@@ -173,14 +170,14 @@ function App() {
         <h2>
             {congrats ? (
                 <div>
-                <h1> 🎊 Congratulations! You Win! 🎊 </h1>
-                <h2> Tap the 'New Game' button to play again! </h2>
+                    <h1> 🎊 Congratulations! You Win! 🎊 </h1>
+                    <h2> Tap the 'New Game' button to play again! </h2>
                 </div>
             ) : gameover ? (
                 <div>
-                <h1> 😔 Game Over! No more guesses left! 😔 </h1>
-                <h2> The word was '{secretWord}' </h2>
-                <h2> Tap the 'New Game' button to play again! </h2>
+                    <h1> 😔 Game Over! No more guesses left! 😔 </h1>
+                    <h2> The word was '{secretWord}' </h2>
+                    <h2> Tap the 'New Game' button to play again! </h2>
                 </div>
             ) : null}
         </h2>
@@ -188,10 +185,8 @@ function App() {
         <div className="card">
             <br/>
             <div className="buttons">
-                <button onClick={newGame}>New Game</button>
-                {!congrats && !gameover && (
-                <button onClick={checkAnswer}>Check Answer</button>
-                )}
+                <button onClick={newGame}> New Game </button>
+                {!congrats && !gameover && (<button onClick={checkAnswer}> Check Answer </button>)}
             </div>
             <br/>
         </div>
@@ -212,12 +207,12 @@ function App() {
             the color codes.
             </h5>
             <h5>
-            In this Vue3 template, a grid of input cells is displayed using an
-            inline-grid layout with six rows and five columns. The "v-for" directive
-            is used to iterate through the "userWords" array and display an input
-            field for each element. The "v-model" directive is used to bind the
-            input field to the corresponding element of the "userWords" array.
-
+            In this React template, a grid of input cells is displayed using an
+            inline-grid layout with six rows and five columns. The userWords.map
+            function binds the user entered input to an input field for each 
+            element. Then, when the input changes, it gets detected by the onChange
+            event handler.
+            
             Conditional rendering is used to change the background color of the
             input field based on the value of the "letterColor" array. Four different
             classes are defined in the "style" section, each with a different background
