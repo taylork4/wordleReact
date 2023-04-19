@@ -7,7 +7,6 @@ const app = express();
 const port = 3000;
 
 app.use(cors());
-response.headers.add('Access-Control-Allow-Origin', '*')
 
 const words = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
 
