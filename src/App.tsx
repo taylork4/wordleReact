@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios, {AxiosResponse} from 'axios'
 import './App.css'
 import './index.css'
 
@@ -16,12 +17,23 @@ function App() {
     const [gameover, setGameover] = useState(false);
 
     const [checks, setChecks] = useState(0);
-    const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
-    const [secretWord, setSecretWord] = useState<string>(() => {
-        return words[Math.floor(Math.random() * words.length)];
-    });
+    const [secretWord, setSecretWord] = useState<string>("");
+    const [started, setStarted] = useState(false);
 
-
+    type WordleResponse = {
+        word: string
+    }
+    
+    if (started == false) {
+        setStarted(true);
+        axios.request({method: "GET", url: "http://localhost:3000/wordleReact"})
+        .then((res:AxiosResponse) => res.data)
+            .then((w: WordleResponse) => {
+                console.log(`The secret word from server is ${w.word}`)
+                setSecretWord(w.word);
+            }   
+        )
+    }
     /*--------------------------------------------------------------------------------------------
     The newGame() method initializes the next Wordle game.
         ~ The timer gets reset and restarted
@@ -29,14 +41,22 @@ function App() {
         ~ All cells get reset
         ~ Game over/win conditions reset
     -------------------------------------------------------------------*/
-    function newGame() {
-        setSecretWord(words[Math.floor(Math.random() * words.length)]);
-        setCongrats(false);
-        setGameover(false);
-        setChecks(0);
-        setUserWords(Array(30).fill(""))
-        setLetterColor(Array(30).fill(""))
-    }
+    async function newGame() {
+        axios.request({method: "GET", url: "http://localhost:3000/wordleReact"})
+            .then((res:AxiosResponse) => res.data)
+                .then((w: WordleResponse) => {
+                    console.log(`The secret word from server is ${w.word}`)
+                    console.log(w.word);
+                    setSecretWord(w.word);
+                    setCongrats(false);
+                    setGameover(false);
+                    setChecks(0);
+                    setUserWords(Array(30).fill(""));
+                    setLetterColor(Array(30).fill(""));
+                }
+        )
+      }
+      
 
     /*--------------------------------------------------------------------------------------------
         The checkAnswer() method is a word matching algorithm with built-in checks for
@@ -126,7 +146,11 @@ function App() {
 
     return (
     <div className="App">
-        <h1>Wordle in React</h1>
+        <h1> Wordle in React </h1>
+        <br></br>
+        <h2> Developed by: </h2>
+        <h3> Cameron Snoap </h3>
+        <h3> Kyle Taylor </h3>
         <h1>
             <div id="grid">
             {userWords.map((w, pos) => (
