@@ -24,6 +24,7 @@ function App() {
         word: string
     }
     
+    //Stop getting requests on start
     if (started == false) {
         setStarted(true);
         axios.request({method: "GET", url: "https://wordlereact.onrender.com/wordleReact"})
