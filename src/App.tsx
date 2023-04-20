@@ -26,7 +26,7 @@ function App() {
     
     if (started == false) {
         setStarted(true);
-        axios.request({method: "GET", url: "http://https://wordlereact.onrender.com/wordleReact"})
+        axios.request({method: "GET", url: "http://wordlereact.onrender.com/wordleReact"})
         .then((res:AxiosResponse) => res.data)
             .then((w: WordleResponse) => {
                 console.log(`The secret word from server is ${w.word}`)
@@ -42,7 +42,7 @@ function App() {
         ~ Game over/win conditions reset
     -------------------------------------------------------------------*/
     async function newGame() {
-        axios.request({method: "GET", url: "http://https://wordlereact.onrender.com/wordleReact"})
+        axios.request({method: "GET", url: "http://wordlereact.onrender.com/wordleReact"})
             .then((res:AxiosResponse) => res.data)
                 .then((w: WordleResponse) => {
                     console.log(`The secret word from server is ${w.word}`)
